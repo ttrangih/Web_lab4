@@ -1,10 +1,18 @@
-
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCirclePlus, faCircleCheck, faHeart, faCommentDots, faBookmark, faShare } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCirclePlus,
+  faCircleCheck,
+  faHeart,
+  faCommentDots,
+  faBookmark,
+  faShare,
+  faVolumeMute,      // ✅ thêm
+  faVolumeHigh      // ✅ thêm
+} from '@fortawesome/free-solid-svg-icons';
 import './FooterRight.css';
 
-function FooterRight({ likes, comments, saves, shares, profilePic }) {
+function FooterRight({ likes, comments, saves, shares, profilePic, isMuted, onToggleMute }) {
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
   const [userAddIcon, setUserAddIcon] = useState(faCirclePlus);
@@ -13,23 +21,23 @@ function FooterRight({ likes, comments, saves, shares, profilePic }) {
     setUserAddIcon(faCircleCheck);
     setTimeout(() => {
       setUserAddIcon(null);
-    }, 3000)
+    }, 3000);
   };
 
-  //convert like count to a number
+  // convert like count to a number
   const parseLikesCount = (count) => {
-    if (typeof count == 'string'){
-      if(count.endsWith('K')){
-        return parseFloat(count)*1000;
+    if (typeof count === 'string') {
+      if (count.endsWith('K')) {
+        return parseFloat(count) * 1000;
       }
       return parseInt(count);
     }
     return count;
   };
 
-  //format like count
+  // format like count
   const formatLikesCount = (count) => {
-    if (count >= 10000){
+    if (count >= 10000) {
       return (count / 1000).toFixed(1) + 'K';
     }
     return count;
@@ -37,71 +45,99 @@ function FooterRight({ likes, comments, saves, shares, profilePic }) {
 
   const handleLikeClick = () => {
     setLiked((prevLiked) => !prevLiked);
-  }
+  };
 
   return (
     <div className='footer-right'>
       <div className='sidebar-icon'>
         {profilePic ? (
-
-        <img src ={profilePic} className='userprofile' alt='Profile' style ={{width: '45px', height:'45px', color:'#616161'}}/>
+          <img
+            src={profilePic}
+            className='userprofile'
+            alt='Profile'
+            style={{ width: '45px', height: '45px', color: '#616161' }}
+          />
         ) : null}
-        {/**user add icon */}
-        <FontAwesomeIcon icon={userAddIcon} className='useradd' style={{width:'15px', height:'15px', color: '#FF0000'}} onClick={handleUserAddClick}/>
-      </div>
-      <div className='sidebar-icon'>
-        {/*heart icon */}
-        <FontAwesomeIcon
-        icon={faHeart} style ={{width:'35px',height:'35px', color: liked ? '#FF0000': 'white'}}
-        onClick={handleLikeClick}
-        />
-        {/**displaying the format like count */}
-        <p>{formatLikesCount(parseLikesCount(likes) + (liked ? 1:0))}</p>
+        {/* user add icon */}
+        {userAddIcon && (
+          <FontAwesomeIcon
+            icon={userAddIcon}
+            className='useradd'
+            style={{ width: '15px', height: '15px', color: '#FF0000' }}
+            onClick={handleUserAddClick}
+          />
+        )}
       </div>
 
       <div className='sidebar-icon'>
-        {/*comment icon */}
+        {/* heart icon */}
         <FontAwesomeIcon
-        icon={faCommentDots}
-        style={{width:'35px', height:'35px',color:'white'}}/>
-        {/*display number of comment */}
+          icon={faHeart}
+          style={{ width: '35px', height: '35px', color: liked ? '#FF0000' : 'white' }}
+          onClick={handleLikeClick}
+        />
+        {/* displaying the formatted like count */}
+        <p>{formatLikesCount(parseLikesCount(likes) + (liked ? 1 : 0))}</p>
+      </div>
+
+      <div className='sidebar-icon'>
+        {/* comment icon */}
+        <FontAwesomeIcon
+          icon={faCommentDots}
+          style={{ width: '35px', height: '35px', color: 'white' }}
+        />
+        {/* display number of comments */}
         <p>{comments}</p>
       </div>
 
       <div className="sidebar-icon">
         {saved ? (
-        // Displaying the bookmark icon when saved
+          // Displaying the bookmark icon when saved
           <FontAwesomeIcon
             icon={faBookmark}
             style={{ width: '35px', height: '35px', color: '#ffc107' }}
-            onClick={() => setSaved(false)}/>
+            onClick={() => setSaved(false)}
+          />
         ) : (
-        // Displaying the bookmark icon when not saved
+          // Displaying the bookmark icon when not saved
           <FontAwesomeIcon
             icon={faBookmark}
             style={{ width: '35px', height: '35px', color: 'white' }}
             onClick={() => setSaved(true)}
-        />
+          />
         )}
         {/* Displaying the number of saves */}
         <p>{saved ? saves + 1 : saves}</p>
       </div>
+
       <div className="sidebar-icon">
         {/* The share icon */}
         <FontAwesomeIcon
-        icon={faShare}
-        style={{ width: '35px', height: '35px', color: 'white' }}
+          icon={faShare}
+          style={{ width: '35px', height: '35px', color: 'white' }}
         />
         {/* Displaying the number of shares */}
         <p>{shares}</p>
       </div>
+
+      {/* ✅ Mute / Unmute icon */}
+      <div className="sidebar-icon">
+        <FontAwesomeIcon
+          icon={isMuted ? faVolumeMute : faVolumeHigh}
+          style={{ width: '35px', height: '35px', color: 'white' }}
+          onClick={onToggleMute}
+        />
+        <p>{isMuted ? 'Mute' : 'Sound'}</p>
+      </div>
+
       <div className="sidebar-icon record">
         {/* Displaying the record icon */}
-        <img src="https://static.thenounproject.com/png/934821-200.png"
-        alt="Record Icon"/>
+        <img
+          src="https://static.thenounproject.com/png/934821-200.png"
+          alt="Record Icon"
+        />
       </div>
     </div>
-
   );
 }
 
