@@ -8,7 +8,8 @@ import {
   faBookmark,
   faShare,
   faVolumeMute, //thêm mute
-  faVolumeHigh //thêm mute
+  faVolumeHigh, //thêm unmute
+  faXmark,           //thêm icon đóng
 } from '@fortawesome/free-solid-svg-icons';
 import './FooterRight.css';
 
@@ -20,11 +21,12 @@ function FooterRight({
   profilePic,
   isMuted,
   onToggleMute,
-  url              //thêm url
+  url,               // dùng cho câu 4 (copy URL)
 }) {
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
   const [userAddIcon, setUserAddIcon] = useState(faCirclePlus);
+  const [showSharePopup, setShowSharePopup] = useState(false);  // question6
 
   const handleUserAddClick = () => {
     setUserAddIcon(faCircleCheck);
@@ -69,6 +71,15 @@ function FooterRight({
         console.error('Failed to copy:', err);
       }
     }
+  };
+
+  //Share popup
+  const handleShareClick = () => {
+    setShowSharePopup(true);
+  };
+
+  const handleCloseShare = () => {
+    setShowSharePopup(false);
   };
 
   return (
@@ -120,21 +131,21 @@ function FooterRight({
           <FontAwesomeIcon
             icon={faBookmark}
             style={{ width: '35px', height: '35px', color: '#ffc107' }}
-            onClick={handleSaveClick}       //dùng handleSaveClick
+            onClick={handleSaveClick}
           />
         ) : (
           // Displaying the bookmark icon when not saved
           <FontAwesomeIcon
             icon={faBookmark}
             style={{ width: '35px', height: '35px', color: 'white' }}
-            onClick={handleSaveClick}       //dùng handleSaveClick
+            onClick={handleSaveClick}
           />
         )}
         {/* Displaying the number of saves */}
         <p>{saved ? saves + 1 : saves}</p>
       </div>
 
-      <div className="sidebar-icon">
+      <div className="sidebar-icon" onClick={handleShareClick}>
         {/* The share icon */}
         <FontAwesomeIcon
           icon={faShare}
@@ -161,6 +172,25 @@ function FooterRight({
           alt="Record Icon"
         />
       </div>
+
+      {/*Popup share*/}
+      {showSharePopup && (
+        <div className="share-popup">
+          <div className="share-popup__content">
+            <div className="share-popup__header">
+              <span>Share to</span>
+              <button className="share-popup__close" onClick={handleCloseShare}>
+                <FontAwesomeIcon icon={faXmark} />
+              </button>
+            </div>
+            <div className="share-popup__options">
+              <button>Facebook</button>
+              <button>Instagram</button>
+              <button>Threads</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
