@@ -7,12 +7,21 @@ import {
   faCommentDots,
   faBookmark,
   faShare,
-  faVolumeMute,      // ✅ thêm
-  faVolumeHigh      // ✅ thêm
+  faVolumeMute, //thêm mute
+  faVolumeHigh //thêm mute
 } from '@fortawesome/free-solid-svg-icons';
 import './FooterRight.css';
 
-function FooterRight({ likes, comments, saves, shares, profilePic, isMuted, onToggleMute }) {
+function FooterRight({
+  likes,
+  comments,
+  saves,
+  shares,
+  profilePic,
+  isMuted,
+  onToggleMute,
+  url              //thêm url
+}) {
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
   const [userAddIcon, setUserAddIcon] = useState(faCirclePlus);
@@ -45,6 +54,21 @@ function FooterRight({ likes, comments, saves, shares, profilePic, isMuted, onTo
 
   const handleLikeClick = () => {
     setLiked((prevLiked) => !prevLiked);
+  };
+
+  //save -> copy URL vào clipboard
+  const handleSaveClick = async () => {
+    const newSaved = !saved;
+    setSaved(newSaved);
+
+    if (navigator.clipboard && url) {
+      try {
+        await navigator.clipboard.writeText(url);
+        console.log('Copied to clipboard:', url);
+      } catch (err) {
+        console.error('Failed to copy:', err);
+      }
+    }
   };
 
   return (
@@ -96,14 +120,14 @@ function FooterRight({ likes, comments, saves, shares, profilePic, isMuted, onTo
           <FontAwesomeIcon
             icon={faBookmark}
             style={{ width: '35px', height: '35px', color: '#ffc107' }}
-            onClick={() => setSaved(false)}
+            onClick={handleSaveClick}       //dùng handleSaveClick
           />
         ) : (
           // Displaying the bookmark icon when not saved
           <FontAwesomeIcon
             icon={faBookmark}
             style={{ width: '35px', height: '35px', color: 'white' }}
-            onClick={() => setSaved(true)}
+            onClick={handleSaveClick}       //dùng handleSaveClick
           />
         )}
         {/* Displaying the number of saves */}
@@ -120,7 +144,7 @@ function FooterRight({ likes, comments, saves, shares, profilePic, isMuted, onTo
         <p>{shares}</p>
       </div>
 
-      {/* ✅ Mute / Unmute icon */}
+      {/* Mute / Unmute icon */}
       <div className="sidebar-icon">
         <FontAwesomeIcon
           icon={isMuted ? faVolumeMute : faVolumeHigh}

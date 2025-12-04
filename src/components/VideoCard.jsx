@@ -71,6 +71,7 @@ const VideoCard = (props) => {
             profilePic={profilePic}
             isMuted={isMuted}                 // truyền xuống
             onToggleMute={handleToggleMute}   // truyền handler
+            url={url} //sao chép url
           />
         </div>
       </div>
