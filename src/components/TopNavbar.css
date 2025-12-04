@@ -1,0 +1,16 @@
+.top-navbar-search-box {
+  position: absolute;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+}
+
+.top-navbar-search-box input {
+  width: 100%;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: none;
+  outline: none;
+  font-size: 14px;
+}

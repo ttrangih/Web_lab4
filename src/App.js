@@ -175,6 +175,26 @@ function App() {
     }
   };
 
+  //q7: search hashtag
+  const handleSearchHashtag = (rawValue) => {
+    const tag = rawValue.trim().replace(/^#/, '').toLowerCase();
+
+    if (!tag) {
+      //nếu rỗng thì reset lại toàn bộ video
+      setVideos(videoUrls);
+      setCurrentIndex(0);
+      return;
+    }
+
+    const filtered = videoUrls.filter((video) =>
+      video.description.toLowerCase().includes(`#${tag}`)
+    );
+
+    setVideos(filtered);
+    setCurrentIndex(0);
+  };
+
+
   return (
     <div className="app">
       {showUploadInfo && videos[currentIndex] && (
@@ -190,7 +210,7 @@ function App() {
         onMouseDown={handleMouseDown}  // drag
         onMouseUp={handleMouseUp}
       >
-        <TopNavbar className="top-navbar" />
+        <TopNavbar className="top-navbar" onSearch={handleSearchHashtag} /> {/*search by hashtag */}
 
         {/* Here we map over the videos array and create VideoCard components */}
         {videos.map((video, index) => (
