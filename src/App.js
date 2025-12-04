@@ -3,6 +3,7 @@ import './App.css';
 import VideoCard from './components/VideoCard';
 import BottomNavbar from './components/BottomNavbar';
 import TopNavbar from './components/TopNavbar';
+import UploadInfo from "./components/UploadInfo";
 
 // This array holds information about different videos
 const videoUrls = [
@@ -57,15 +58,19 @@ const videoUrls = [
 
 function App() {
   const [videos, setVideos] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);   //video đang đứng
+  const [currentIndex, setCurrentIndex] = useState(0);   // video đang đứng
 
   const videoRefs = useRef([]);
-  const startYRef = useRef(null);                        //bắt đầu kéo
+  const startYRef = useRef(null);                        // bắt đầu kéo
+
+  const [showUploadInfo, setShowUploadInfo] = useState(false);
+  const hideInfoTimeoutRef = useRef(null);
 
   useEffect(() => {
     setVideos(videoUrls);
   }, []);
 
+  // IntersectionObserver: auto play/pause theo scroll
   useEffect(() => {
     const observerOptions = {
       root: null,
@@ -102,12 +107,42 @@ function App() {
     };
   }, [videos]);
 
+  // CÂU 5: scroll hoặc ArrowRight -> hiện UploadInfo vài giây
+  useEffect(() => {
+    const showPanel = () => {
+      setShowUploadInfo(true);
+      if (hideInfoTimeoutRef.current) {
+        clearTimeout(hideInfoTimeoutRef.current);
+      }
+      hideInfoTimeoutRef.current = setTimeout(() => {
+        setShowUploadInfo(false);
+      }, 3000);
+    };
+
+    const handleScroll = () => showPanel();
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'ArrowRight') showPanel();
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("keydown", handleKeyDown);
+      if (hideInfoTimeoutRef.current) {
+        clearTimeout(hideInfoTimeoutRef.current);
+      }
+    };
+  }, []);
+
   // This function handles the reference of each video
   const handleVideoRef = (index) => (ref) => {
     videoRefs.current[index] = ref;
   };
 
-  //question 3
+  // QUESTION 3: drag lên/xuống để đổi video
   const handleMouseDown = (e) => {
     startYRef.current = e.clientY;
   };
@@ -119,12 +154,12 @@ function App() {
     const threshold = 50; // px cần kéo tối thiểu
 
     if (diff < -threshold && currentIndex < videos.length - 1) {
-      //pull up to next vid
+      // pull up to next video
       const next = currentIndex + 1;
       setCurrentIndex(next);
       scrollToVideo(next);
     } else if (diff > threshold && currentIndex > 0) {
-      //pull down previous video
+      // pull down to previous video
       const prev = currentIndex - 1;
       setCurrentIndex(prev);
       scrollToVideo(prev);
@@ -140,15 +175,23 @@ function App() {
     }
   };
 
-
   return (
     <div className="app">
+      {showUploadInfo && videos[currentIndex] && (
+        <UploadInfo
+          username={videos[currentIndex].username}
+          description={videos[currentIndex].description}
+          song={videos[currentIndex].song}
+        />
+      )}
+
       <div
         className="container"
-        onMouseDown={handleMouseDown}   //drag
+        onMouseDown={handleMouseDown}  // drag
         onMouseUp={handleMouseUp}
       >
         <TopNavbar className="top-navbar" />
+
         {/* Here we map over the videos array and create VideoCard components */}
         {videos.map((video, index) => (
           <VideoCard
@@ -166,6 +209,7 @@ function App() {
             autoplay={index === 0}
           />
         ))}
+
         <BottomNavbar className="bottom-navbar" />
       </div>
     </div>
